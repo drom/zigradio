@@ -91,7 +91,8 @@ pub const SampleMux = struct {
         }
         inline for (type_signature.outputs, 0..) |output_type, i| {
             const buffer = self.vtable.getOutputBuffer(self.ptr, i);
-            sample_buffers.outputs[i] = @alignCast(std.mem.bytesAsSlice(output_type, buffer[0..std.mem.alignBackward(usize, buffer.len, @sizeOf(type_signature.outputs[i]))]));
+            const item_size = @sizeOf(type_signature.outputs[i]);
+            sample_buffers.outputs[i] = @alignCast(std.mem.bytesAsSlice(output_type, buffer[0 .. (buffer.len / item_size) * item_size]));
         }
 
         // Return typed input and output buffers

@@ -87,7 +87,8 @@ pub fn ApplicationSource(comptime T: type) type {
 
         pub fn get(self: *Self) []T {
             const buffer = self.sample_mux.vtable.getOutputBuffer(self.sample_mux.ptr, 0);
-            return @alignCast(std.mem.bytesAsSlice(T, buffer[0..std.mem.alignBackward(usize, buffer.len, @sizeOf(T))]));
+            const item_size = @sizeOf(T);
+            return @alignCast(std.mem.bytesAsSlice(T, buffer[0 .. (buffer.len / item_size) * item_size]));
         }
 
         pub fn update(self: *Self, count: usize) void {
